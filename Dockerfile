@@ -1,4 +1,4 @@
-FROM    debian:10-slim
+FROM	debian:10-slim
 
 ENV	APP="wget2"
 ENV	VERSION="1.99.2"
@@ -10,7 +10,7 @@ ENV	PACKAGES="wget make git autoconf autogen automake autopoint libtool-bin pyth
 SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install packages
-RUN     apt-get update \
+RUN	apt-get update \
 &&	apt-get -y install $PACKAGES
 #&&	apt-get -y --no-install-recommends install $PACKAGES
 
@@ -30,9 +30,10 @@ COPY    rootfs /
 # Create debian package with checkinstall
 RUN     apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
 RUN     checkinstall -y --install=no \
-                        --pkgname=$APP \
-                        --pkgversion=$VERSION \
-                        --maintainer=casperklein@docker-$APP-builder
+			--pkgname=$APP \
+			--pkgversion=$VERSION \
+			--maintainer=casperklein@docker-$APP-builder \
+			--requires=libbrotli1
 
 # Move tmux debian package to /mnt on container start
 CMD	mv ${APP}_${VERSION}*.deb /mnt

@@ -15,7 +15,9 @@ clean:
 install:
 	APP=$$(grep APP= Dockerfile | cut -d'"' -f2) && \
 	VERSION=$$(grep VERSION= Dockerfile | cut -d'"' -f2) && \
+	apt-get -y install libbrotli1
 	dpkg -i $${APP}_$${VERSION}-1*.deb
 
 uninstall:
 	apt-get purge $$APP
+	apt-get purge libbrotli1
