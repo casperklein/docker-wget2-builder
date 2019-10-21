@@ -4,13 +4,18 @@
 default: build
 
 build:
-	echo "Building.."
+	./build.sh
 
 clean:
-	echo "Cleaning.."
+	APP=$$(grep APP= Dockerfile | cut -d'"' -f2) && \
+	VERSION=$$(grep VERSION= Dockerfile | cut -d'"' -f2) && \
+	rm -vf $${APP}_$${VERSION}-1*.deb && \
+	docker rmi casperklein/$$APP-builder:$$VERSION
 
 install:
-	echo "Installing.."
+	APP=$$(grep APP= Dockerfile | cut -d'"' -f2) && \
+	VERSION=$$(grep VERSION= Dockerfile | cut -d'"' -f2) && \
+	dpkg -i $${APP}_$${VERSION}-1*.deb
 
 uninstall:
-	echo "Uninstalling.."
+	apt-get purge $$APP

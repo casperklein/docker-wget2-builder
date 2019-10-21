@@ -1,13 +1,21 @@
 #!/bin/bash
 
-USER=casperklein
-NAME=
-TAG=latest
+set -ueo pipefail
 
-[ -n "$USER" ] && TAG=$USER/$NAME:$TAG || TAG=$NAME:$TAG
+APP=$(grep APP= Dockerfile | cut -d'"' -f2)
+USER="casperklein"
+NAME="$APP-builder"
+TAG=$(grep VERSION= Dockerfile | cut -d'"' -f2)
+IMAGE="$USER/$NAME:$TAG"
 
 DIR=${0%/*}
-cd "$DIR" &&
-echo "Building: $TAG" &&
-echo &&	
-docker build -t $TAG .
+cd "$DIR"
+
+echo "Building $APP $TAG"
+echo 
+docker build -t "$IMAGE" .
+echo
+
+echo "Copy $APP $TAG debian package to $(pwd)/"
+docker run --rm -v "$(pwd)":/mnt/ "$IMAGE"
+echo
