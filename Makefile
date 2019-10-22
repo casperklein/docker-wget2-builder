@@ -13,9 +13,9 @@ clean:
 	docker rmi casperklein/$$APP-builder:$$VERSION
 
 install:
+	apt-get -y install libbrotli1 && \
 	APP=$$(grep APP= Dockerfile | cut -d'"' -f2) && \
 	VERSION=$$(grep VERSION= Dockerfile | cut -d'"' -f2) && \
-	apt-get -y install libbrotli1
 	dpkg -i $${APP}_$${VERSION}-1*.deb
 
 uninstall:
