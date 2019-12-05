@@ -2,20 +2,19 @@
 
 set -ueo pipefail
 
-APP=$(grep APP= Dockerfile | cut -d'"' -f2)
-USER="casperklein"
-NAME="$APP-builder"
-TAG=$(grep VERSION= Dockerfile | cut -d'"' -f2)
-IMAGE="$USER/$NAME:$TAG"
+USER=$(grep -P 'ENV\s+USER=".+?"' Dockerfile | cut -d'"' -f2)
+NAME=$(grep -P 'ENV\s+NAME=".+?"' Dockerfile | cut -d'"' -f2)
+VERSION=$(grep -P 'ENV\s+VERSION=".+?"' Dockerfile | cut -d'"' -f2)
+TAG="$USER/$NAME:$VERSION"
 
 DIR=${0%/*}
 cd "$DIR"
 
-echo "Building $APP $TAG"
-echo 
-docker build -t "$IMAGE" .
+echo "Building: $NAME $VERSION"
 echo
+docker build -t "$TAG" .
+docker tag "$TAG" "$USER/$NAME:latest"
 
-echo "Copy $APP $TAG debian package to $(pwd)/"
-docker run --rm -v "$(pwd)":/mnt/ "$IMAGE"
+echo "Copy $NAME $VERSION debian package to $(pwd)/"
+docker run --rm -v "$(pwd)":/mnt/ "$TAG"
 echo
