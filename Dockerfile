@@ -35,7 +35,8 @@ RUN     checkinstall -y --install=no \
 			--pkgname=wget2 \
 			--pkgversion=$VERSION \
 			--maintainer=$USER@$NAME:$VERSION \
-			--requires=libbrotli1
+			--requires=libbrotli1 \
+			--pkggroup=web
 
 # Move tmux debian package to /mnt on container start
 CMD	mv wget2_${VERSION}*.deb /mnt
