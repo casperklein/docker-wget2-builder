@@ -1,7 +1,9 @@
 FROM	debian:10-slim
 
-ENV	APP="wget2"
+ENV	USER="casperklein"
+ENV	NAME="wget2-builder"
 ENV	VERSION="1.99.2"
+
 ENV	GIT_REPO="https://github.com/rockdaboot/wget2"
 ENV	GIT_COMMIT="af9703a93c922598db1f3180eb928485092b2f1c"
 
@@ -15,7 +17,7 @@ RUN	apt-get update \
 #&&	apt-get -y --no-install-recommends install $PACKAGES
 
 # Build wget2
-WORKDIR	/$APP
+WORKDIR	/$NAME
 RUN	git init			# make a new blank repository
 RUN	git remote add origin $GIT_REPO	# add a remote
 RUN	git fetch origin $GIT_COMMIT	# fetch commit of interest
@@ -30,10 +32,10 @@ COPY    rootfs /
 # Create debian package with checkinstall
 RUN     apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
 RUN     checkinstall -y --install=no \
-			--pkgname=$APP \
+			--pkgname=wget2 \
 			--pkgversion=$VERSION \
-			--maintainer=casperklein@docker-$APP-builder \
+			--maintainer=$USER@docker-$NAME:$VERSION \
 			--requires=libbrotli1
 
 # Move tmux debian package to /mnt on container start
-CMD	mv ${APP}_${VERSION}*.deb /mnt
+CMD	mv wget2_${VERSION}*.deb /mnt
