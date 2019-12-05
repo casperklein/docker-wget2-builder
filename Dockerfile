@@ -34,7 +34,7 @@ RUN     apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /che
 RUN     checkinstall -y --install=no \
 			--pkgname=wget2 \
 			--pkgversion=$VERSION \
-			--maintainer=$USER@docker-$NAME:$VERSION \
+			--maintainer=$USER@$NAME:$VERSION \
 			--requires=libbrotli1
 
 # Move tmux debian package to /mnt on container start
