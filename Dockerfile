@@ -3,6 +3,7 @@ FROM	debian:10-slim
 ENV	USER="casperklein"
 ENV	NAME="wget2-builder"
 ENV	VERSION="1.99.2"
+ENV	APP="wget2"
 
 ENV	GIT_REPO="https://github.com/rockdaboot/wget2"
 ENV	GIT_COMMIT="af9703a93c922598db1f3180eb928485092b2f1c"
@@ -32,11 +33,10 @@ COPY    rootfs /
 # Create debian package with checkinstall
 RUN     apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
 RUN     checkinstall -y --install=no \
-			--pkgname=wget2 \
+			--pkgname=$APP \
 			--pkgversion=$VERSION \
 			--maintainer=$USER@$NAME:$VERSION \
-			--requires=libbrotli1 \
 			--pkggroup=web
 
 # Move tmux debian package to /mnt on container start
-CMD	mv wget2_${VERSION}*.deb /mnt
+CMD	mv ${APP}_${VERSION}*.deb /mnt
