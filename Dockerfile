@@ -5,6 +5,7 @@ ENV	USER="casperklein"
 ENV	NAME="wget2-builder"
 ENV	VERSION="1.99.2"
 ENV	APP="wget2"
+ENV	GROUP="web"
 
 ENV	GIT_REPO="https://github.com/rockdaboot/wget2"
 ENV	GIT_COMMIT="af9703a93c922598db1f3180eb928485092b2f1c"
@@ -16,7 +17,6 @@ SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 # Install packages
 RUN	apt-get update \
 &&	apt-get -y install $PACKAGES
-#&&	apt-get -y --no-install-recommends install $PACKAGES
 
 # Build wget2
 WORKDIR	/$NAME
@@ -24,7 +24,7 @@ RUN	git init			# make a new blank repository
 RUN	git remote add origin $GIT_REPO	# add a remote
 RUN	git fetch origin $GIT_COMMIT	# fetch commit of interest
 RUN	git reset --hard FETCH_HEAD	# reset this repository's master branch to the commit of interest
-RUN	./bootstrap
+RUN	./bootstrap			# requires git
 RUN	./configure --prefix=/usr
 RUN	make
 
@@ -37,7 +37,7 @@ RUN     checkinstall -y --install=no \
 			--pkgname=$APP \
 			--pkgversion=$VERSION \
 			--maintainer=$USER@$NAME \
-			--pkggroup=web
+			--pkggroup=$GROUP
 
 # Move tmux debian package to /mnt on container start
 CMD	mv ${APP}_${VERSION}-1_*.deb /mnt
