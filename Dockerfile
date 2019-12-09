@@ -27,6 +27,7 @@ RUN	git reset --hard FETCH_HEAD	# reset this repository's master branch to the c
 RUN	./bootstrap			# requires git
 RUN	./configure --prefix=/usr
 RUN	make
+RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak
 
 # Copy root filesystem
 COPY    rootfs /
