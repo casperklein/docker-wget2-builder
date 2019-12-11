@@ -30,11 +30,11 @@ RUN	make
 RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak
 
 # Copy root filesystem
-COPY    rootfs /
+COPY	rootfs /
 
 # Create debian package with checkinstall
-RUN     apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
-RUN     checkinstall -y --install=no \
+RUN	apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
+RUN	checkinstall -y --install=no \
 			--pkgname=$APP \
 			--pkgversion=$VERSION \
 			--maintainer=$USER@$NAME \
