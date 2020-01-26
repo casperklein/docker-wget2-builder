@@ -33,7 +33,19 @@ RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website d
 COPY	rootfs /
 
 # Create debian package with checkinstall
-RUN	apt-get install -y --no-install-recommends file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_amd64.deb
+RUN     MASCHINE=$(uname -m);   \
+        case "$MASCHINE" in     \
+        x86_64)                 \
+                ARCH="amd64"    \
+                ;;              \
+        aarch64)                \
+                ARCH="arm64"    \
+                ;;              \
+        *)                      \
+                ARCH="armhf"    \
+                ;;              \
+        esac;                   \
+        apt-get -y --no-install-recommends install file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_$ARCH.deb
 RUN	checkinstall -y --install=no \
 			--pkgname=$APP \
 			--pkgversion=$VERSION \
