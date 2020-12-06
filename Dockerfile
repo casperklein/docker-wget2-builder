@@ -33,8 +33,8 @@ RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website d
 COPY	rootfs /
 
 # Create debian package with checkinstall
-RUN	MACHINE=$(uname -m);   \
-	case "$MACHINE" in     \
+RUN	MACHINE=$(uname -m);    \
+	case "$MACHINE" in      \
 	x86_64)                 \
 		ARCH="amd64"    \
 		;;              \
