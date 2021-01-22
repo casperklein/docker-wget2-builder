@@ -1,0 +1,6 @@
+{
+  "user": "casperklein",
+  "name": "docker-wget2-builder",
+  "image": "casperklein/docker-wget2-builder",
+  "version": "1.99.2"
+}

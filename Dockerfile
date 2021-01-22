@@ -1,56 +1,47 @@
-ARG	version=10
-FROM	debian:$version-slim
+FROM	debian:10-slim
 
-ENV	USER="casperklein"
-ENV	NAME="wget2-builder"
-ENV	VERSION="1.99.2"
-ENV	APP="wget2"
-ENV	GROUP="web"
+ENV	GIT_USER="rockdaboot"
+ENV	GIT_REPO="wget2"
+ENV	GIT_COMMIT="687ac99602ba8c923c590757f6aa7d89e6cd008b"
+ENV	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
 
-ENV	GIT_REPO="https://github.com/rockdaboot/wget2"
-ENV	GIT_COMMIT="af9703a93c922598db1f3180eb928485092b2f1c"
-
-ENV	PACKAGES="wget make git autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
+ENV	PACKAGES="file checkinstall dpkg-dev dumb-init make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
 
 SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install packages
-RUN	apt-get update \
-&&	apt-get -y install $PACKAGES
+ENV	DEBIAN_FRONTEND=noninteractive
+RUN	echo 'deb http://deb.debian.org/debian buster-backports main' > /etc/apt/sources.list.d/buster-backports.list \
+&&	apt-get update \
+&&	apt-get -y upgrade \
+&&	apt-get -y --no-install-recommends install $PACKAGES \
+&&	rm -rf /var/lib/apt/lists/*
+
+# Download source
+#WORKDIR	/$GIT_REPO
+#ADD	$GIT_ARCHIVE /
+#RUN	tar --strip-component 1 -xzvf /$GIT_COMMIT.tar.gz && rm /$GIT_COMMIT.tar.gz
 
 # Build wget2
-WORKDIR	/$NAME
-RUN	git init			# make a new blank repository
-RUN	git remote add origin $GIT_REPO	# add a remote
-RUN	git fetch origin $GIT_COMMIT	# fetch commit of interest
-RUN	git reset --hard FETCH_HEAD	# reset this repository's master branch to the commit of interest
-RUN	./bootstrap			# requires git
-RUN	./configure --prefix=/usr
-RUN	make
-RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak
-
-# Copy root filesystem
-COPY	rootfs /
+ARG     MAKEFLAGS=""
+RUN	git clone https://github.com/$GIT_USER/$GIT_REPO $GIT_REPO # ./bootstrap requires to run in a git directory
+WORKDIR	/$GIT_REPO
+RUN	./bootstrap			\
+&&	./configure --prefix=/usr	\
+&&	make				\
+&&	make check
 
 # Create debian package with checkinstall
-RUN	MACHINE=$(uname -m);    \
-	case "$MACHINE" in      \
-	x86_64)                 \
-		ARCH="amd64"    \
-		;;              \
-	aarch64)                \
-		ARCH="arm64"    \
-		;;              \
-	*)                      \
-		ARCH="armhf"    \
-		;;              \
-	esac;                   \
-	apt-get -y --no-install-recommends install file dpkg-dev && dpkg -i /checkinstall_1.6.2-4_$ARCH.deb
-RUN	checkinstall -y --install=no \
-			--pkgname=$APP \
-			--pkgversion=$VERSION \
-			--maintainer=$USER@$NAME \
+ENV	APP="wget2"
+ENV	MAINTAINER="casperklein@docker-wget2-builder"
+ENV	GROUP="web"
+ARG	VERSION
+RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak \
+&&	checkinstall -y --install=no			\
+			--pkgname=$APP			\
+			--pkgversion=$VERSION		\
+			--maintainer=$MAINTAINER	\
 			--pkggroup=$GROUP
 
-# Move tmux debian package to /mnt on container start
-CMD	mv ${APP}_${VERSION}-1_*.deb /mnt
+# Move debian package to /mnt on container start
+CMD	mv ${APP}_*.deb /mnt
