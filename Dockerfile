@@ -23,7 +23,7 @@ RUN	echo 'deb http://deb.debian.org/debian buster-backports main' > /etc/apt/sou
 #RUN	tar --strip-component 1 -xzvf /$GIT_COMMIT.tar.gz && rm /$GIT_COMMIT.tar.gz
 
 # Build wget2
-ARG     MAKEFLAGS=""
+ARG	MAKEFLAGS=""
 RUN	git clone https://github.com/$GIT_USER/$GIT_REPO $GIT_REPO # ./bootstrap requires to run in a git directory
 WORKDIR	/$GIT_REPO
 RUN	./bootstrap			\
@@ -44,4 +44,4 @@ RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website d
 			--pkggroup=$GROUP
 
 # Move debian package to /mnt on container start
-CMD	mv ${APP}_*.deb /mnt
+CMD	["bash", "-c", "mv ${APP}_*.deb /mnt"]
