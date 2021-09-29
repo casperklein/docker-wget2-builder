@@ -16,11 +16,6 @@ RUN	apt-get update \
 &&	apt-get -y --no-install-recommends install $PACKAGES \
 &&	rm -rf /var/lib/apt/lists/*
 
-# Download source
-#WORKDIR	/$GIT_REPO
-#ADD	$GIT_ARCHIVE /
-#RUN	tar --strip-component 1 -xzvf /$GIT_COMMIT.tar.gz && rm /$GIT_COMMIT.tar.gz
-
 # Build wget2
 ARG	MAKEFLAGS=""
 RUN	git clone https://github.com/$GIT_USER/$GIT_REPO $GIT_REPO # ./bootstrap requires to run in a git directory
