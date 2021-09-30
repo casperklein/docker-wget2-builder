@@ -1,26 +1,20 @@
-FROM	debian:10-slim
+FROM	debian:11-slim
 
 ENV	GIT_USER="rockdaboot"
 ENV	GIT_REPO="wget2"
-ENV	GIT_COMMIT="687ac99602ba8c923c590757f6aa7d89e6cd008b"
+ENV	GIT_COMMIT="v2.0.0"
 ENV	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
 
-ENV	PACKAGES="file checkinstall dpkg-dev dumb-init make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
+ENV	PACKAGES="file checkinstall dpkg-dev make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
 
 SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install packages
 ENV	DEBIAN_FRONTEND=noninteractive
-RUN	echo 'deb http://deb.debian.org/debian buster-backports main' > /etc/apt/sources.list.d/buster-backports.list \
-&&	apt-get update \
+RUN	apt-get update \
 &&	apt-get -y upgrade \
 &&	apt-get -y --no-install-recommends install $PACKAGES \
 &&	rm -rf /var/lib/apt/lists/*
-
-# Download source
-#WORKDIR	/$GIT_REPO
-#ADD	$GIT_ARCHIVE /
-#RUN	tar --strip-component 1 -xzvf /$GIT_COMMIT.tar.gz && rm /$GIT_COMMIT.tar.gz
 
 # Build wget2
 ARG	MAKEFLAGS=""
