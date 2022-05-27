@@ -2,8 +2,8 @@ FROM	debian:11-slim
 
 ENV	GIT_USER="rockdaboot"
 ENV	GIT_REPO="wget2"
-ENV	GIT_COMMIT="v2.0.0"
-ENV	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
+ENV	GIT_COMMIT="v2.0.1"
+#ENV	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
 
 ENV	PACKAGES="file checkinstall dpkg-dev make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
 
@@ -20,6 +20,7 @@ RUN	apt-get update \
 ARG	MAKEFLAGS=""
 RUN	git clone https://github.com/$GIT_USER/$GIT_REPO $GIT_REPO # ./bootstrap requires to run in a git directory
 WORKDIR	/$GIT_REPO
+RUN	git checkout "$GIT_COMMIT"
 RUN	./bootstrap			\
 &&	./configure --prefix=/usr	\
 &&	make				\
