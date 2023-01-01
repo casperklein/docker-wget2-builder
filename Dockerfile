@@ -1,16 +1,16 @@
 FROM	debian:11-slim
 
-ENV	GIT_USER="rockdaboot"
-ENV	GIT_REPO="wget2"
-ENV	GIT_COMMIT="v2.0.1"
-#ENV	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
+ARG	GIT_USER="rockdaboot"
+ARG	GIT_REPO="wget2"
+ARG	GIT_COMMIT="v2.0.1"
+#ARG	GIT_ARCHIVE="https://github.com/$GIT_USER/$GIT_REPO/archive/$GIT_COMMIT.tar.gz"
 
-ENV	PACKAGES="file checkinstall dpkg-dev make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
+ARG	PACKAGES="file checkinstall dpkg-dev make git ca-certificates wget autoconf autogen automake autopoint libtool-bin python rsync tar texinfo pkg-config doxygen pandoc gettext libbz2-dev flex lzip lcov libiconv-hook-dev zlib1g-dev liblzma-dev libbrotli-dev libzstd-dev libgnutls28-dev libidn2-dev libpsl-dev libnghttp2-dev libmicrohttpd-dev libpcre2-dev"
 
 SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install packages
-ENV	DEBIAN_FRONTEND=noninteractive
+ARG	DEBIAN_FRONTEND=noninteractive
 RUN	apt-get update \
 &&	apt-get -y upgrade \
 &&	apt-get -y --no-install-recommends install $PACKAGES \
@@ -27,10 +27,10 @@ RUN	./bootstrap			\
 &&	make check
 
 # Create debian package with checkinstall
-ENV	APP="wget2"
-ENV	MAINTAINER="casperklein@docker-wget2-builder"
-ENV	GROUP="web"
-ARG	VERSION
+ARG	APP="wget2"
+ARG	MAINTAINER="casperklein@docker-wget2-builder"
+ARG	GROUP="web"
+ARG	VERSION="unknown"
 RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak \
 &&	checkinstall -y --install=no			\
 			--pkgname=$APP			\
@@ -40,3 +40,8 @@ RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website d
 
 # Move debian package to /mnt on container start
 CMD	["bash", "-c", "mv ${APP}_*.deb /mnt"]
+
+LABEL	org.opencontainers.image.description="Builds a wget2 debian package"
+LABEL	org.opencontainers.image.source="https://github.com/casperklein/docker-wget2-builder/"
+LABEL	org.opencontainers.image.title="docker-wget2-builder"
+LABEL	org.opencontainers.image.version="$VERSION"
