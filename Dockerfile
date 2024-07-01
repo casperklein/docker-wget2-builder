@@ -1,4 +1,4 @@
-FROM	debian:11-slim
+FROM	arm64/v8/debian:stable-slim
 
 ARG	GIT_USER="rockdaboot"
 ARG	GIT_REPO="wget2"
@@ -11,9 +11,8 @@ SHELL	["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install packages
 ARG	DEBIAN_FRONTEND=noninteractive
-RUN	apt-get update \
-&&	apt-get -y upgrade \
-&&	apt-get -y --no-install-recommends install $PACKAGES \
+RUN	apt-get -yfm --update --autoremove --purge full-upgrade \
+&&	apt-get -yfm --update --autoremove --purge --no-install-recommends install $PACKAGES \
 &&	rm -rf /var/lib/apt/lists/*
 
 # Build wget2
@@ -31,7 +30,7 @@ ARG	APP="wget2"
 ARG	MAINTAINER="casperklein@docker-wget2-builder"
 ARG	GROUP="web"
 ARG	VERSION="unknown"
-RUN	echo 'GNU Wget2 is the successor of GNU Wget, a file and recursive website downloader.' > description-pak \
+RUN	echo 'GNU Wget2 is the next generation of GNU Wget, a file and recursive website downloader.' > description-pak \
 &&	checkinstall -y --install=no			\
 			--pkgname=$APP			\
 			--pkgversion=$VERSION		\
